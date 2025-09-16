@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Online To-Do / Timetable app (Teacher/Admin + Students)
 -------------------------------------------------------
 
@@ -17,3 +18,6 @@ How to run:
 Security notes:
 - This is a demo. Change ADMIN_PASS and session secret before deploying.
 - Consider moving to real database and add authentication for students for production.
+=======
+# classtasks
+>>>>>>> 1e0087fcb27db7e5f1f89c8ca60565589f9711be
