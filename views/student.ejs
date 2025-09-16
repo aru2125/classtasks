@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Class Tasks</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/public/images/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/public/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body>
+<header class="topbar" style="display:flex;align-items:center;justify-content:space-between;">
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <img src="/public/images/apple-touch-icon.png" alt="Logo" style="width:40px;height:40px;border-radius:8px;">
+    <h1 style="margin:0;">Class Tasks / Timetable</h1>
+  </div>
+  <a class="btn" href="/admin/login">Teacher login</a>
+</header>
+<main class="container">
+  <section class="task-list">
+    <div class="controls">
+      <label>Show: <select id="filter"><option value="all">All</option><option value="active">Active</option><option value="completed">Completed</option><option value="today">Due Today</option></select></label>
+      <button id="subscribe">Enable notifications</button>
+    </div>
+    <div id="tasksArea"></div>
+  </section>
+  <aside class="sidebar">
+    <h3>How to use</h3>
+    <ol><li>Teacher posts tasks/timetable here.</li><li>Students click a task to mark complete.</li><li>Allow notifications to get live notices.</li></ol>
+    <h4>Recent updates</h4>
+    <div id="updates"></div>
+  </aside>
+</main>
+<script>
+let lastKnown = <%- JSON.stringify(lastUpdated || 0) %>;
+async function fetchTasks(){
+  const res = await fetch('/api/tasks'); const j = await res.json();
+  renderTasks(j.tasks);
+  lastKnown = j.lastUpdated;
+}
+function renderTasks(tasks){
+  const area = document.getElementById('tasksArea');
+  const f = document.getElementById('filter').value;
+  const today = new Date().toISOString().slice(0,10);
+  let visible = tasks.slice();
+  if(f==='active') visible = visible.filter(t=>!t.completed);
+  if(f==='completed') visible = visible.filter(t=>t.completed);
+  if(f==='today') visible = visible.filter(t=>t.due===today);
+  area.innerHTML = visible.map(t=>{
+    let docLink = '';
+    if (t.document && t.document.path) {
+      const isImg = t.document.mimetype && t.document.mimetype.startsWith('image/');
+      if (isImg) {
+        docLink = `<div><img src="${t.document.path}" alt="Document" style="max-width:150px;max-height:150px;margin:8px 0;"></div>`;
+      } else {
+        docLink = `<div><a href="${t.document.path}" target="_blank">View/Download Document</a></div>`;
+      }
+    }
+    return `<div class="task ${t.completed?'done':''}" data-id="${t.id}"><h3>${t.title}</h3><p class="muted">Due: ${t.due||'—'} | ${t.tag||''}</p><p>${t.description||''}</p>${docLink}<div class="actions"><button onclick="toggle('${t.id}', ${t.completed? 'false':'true'})">${t.completed?'Mark active':'Mark done'}</button></div></div>`;
+  }).join('');
+}
+async function toggle(id, mark){
+  const res = await fetch('/api/tasks/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id, done: mark})});
+  const j = await res.json();
+  if(j.ok){ fetchTasks(); addUpdate('Task updated'); }
+}
+function addUpdate(msg){
+  const u = document.getElementById('updates'); const el = document.createElement('div'); el.textContent = new Date().toLocaleTimeString() + ' — ' + msg; u.prepend(el);
+}
+// Poll for changes and show browser notification for new tasks
+setInterval(async ()=>{
+  try{
+    const res = await fetch('/api/lastUpdated'); const j = await res.json();
+    if(j.lastUpdated > lastKnown){
+      // new update: fetch tasks and show notification for new items
+      const tasksRes = await fetch('/api/tasks'); const data = await tasksRes.json();
+      // find new tasks (created after lastKnown)
+      const newTasks = data.tasks.filter(t=> new Date(t.createdAt).getTime() > lastKnown);
+      newTasks.forEach(t=> notify(`${t.title}`, t.description || 'New task posted'));
+      lastKnown = data.lastUpdated;
+      fetchTasks();
+      addUpdate('New tasks posted');
+    }
+  }catch(e){ console.error(e); }
+}, 5000);
+
+// Notification helper
+function notify(title, body){
+  if(Notification.permission === 'granted') new Notification(title, { body });
+}
+document.getElementById('subscribe').addEventListener('click', async ()=>{
+  if(Notification.permission !== 'granted') await Notification.requestPermission();
+  if(Notification.permission === 'granted') alert('Notifications enabled — you will get updates when teacher posts tasks.');
+});
+
+document.getElementById('filter').addEventListener('change', ()=> fetchTasks());
+
+// initial load
+fetchTasks();
+</script>
+  <a href="https://wa.me/+256709339723" class="whatsapp-float" target="_blank" title="Get help on WhatsApp" style="text-decoration:none;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" style="vertical-align:middle;"><circle cx="16" cy="16" r="16" fill="#25d366"/><path fill="#fff" d="M24.5 19.7c-.4-.2-2.3-1.1-2.6-1.2-.3-.1-.5-.2-.7.2-.2.4-.8 1.2-1 1.4-.2.2-.4.3-.8.1-.4-.2-1.7-.6-3.2-2-1.2-1.1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.6.2-.2.2-.4.3-.6.1-.2.1-.4 0-.6 0-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7 0 1.6 1.2 3.1 1.4 3.3.2.2 2.3 3.5 5.6 4.7.8.3 1.4.5 1.9.6.8.2 1.5.2 2.1.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.1-1.4-.1-.1-.4-.2-.8-.4z"/></svg>
+  </a>
+</body></html>

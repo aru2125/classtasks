@@ -1,0 +1,40 @@
+/* WhatsApp floating button */
+.whatsapp-float {
+	position: fixed;
+	bottom: 24px;
+	right: 24px;
+	z-index: 9999;
+	background: #25d366;
+	color: #fff;
+	border-radius: 50%;
+	width: 56px;
+	height: 56px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+	font-size: 2.2rem;
+	cursor: pointer;
+	transition: box-shadow 0.2s;
+}
+.whatsapp-float:hover {
+	box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+	background: #128c7e;
+}
+/* Simple clean responsive styling */
+body{font-family:Inter,system-ui,Arial,sans-serif;margin:0;background:#f7fbf7;color:#06220a}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:0.8rem 1rem;background:linear-gradient(180deg,#ffffff,#eef8ee);border-bottom:1px solid #e2efe2}
+.topbar .btn{background:#2f8a4d;color:#fff;padding:.5rem .8rem;border-radius:8px;text-decoration:none}
+.container{max-width:1100px;margin:1rem auto;display:grid;grid-template-columns:1fr 320px;gap:1rem;padding:0 1rem}
+.card{background:#fff;padding:0.8rem;border-radius:10px;box-shadow:0 6px 18px rgba(10,30,15,0.06)}
+.left .task-card{background:#fff;padding:.6rem;border-radius:8px;margin:.6rem 0;border:1px solid #eef6ee}
+.muted{color:#6e846f;font-size:.9rem}
+.sidebar{background:#fff;padding:1rem;border-radius:10px}
+.controls{display:flex;gap:.6rem;align-items:center}
+.task-list .task{background:#fff;padding:.8rem;border-radius:8px;margin:.6rem 0;border:1px solid #eef6ee}
+.task.done{opacity:0.6;text-decoration:line-through}
+.actions button{background:#2f8a4d;color:#fff;border:0;padding:.4rem .6rem;border-radius:6px;cursor:pointer}
+.inline-form{display:flex;gap:.4rem;align-items:center;margin:.4rem 0}
+.inline-form input{padding:.4rem;border-radius:6px;border:1px solid #e6efe8}
+.danger{background:#d85742}
+@media (max-width:920px){ .container{grid-template-columns:1fr; padding:0 0.6rem} .sidebar{order:3} }

@@ -1,0 +1,39 @@
+{
+  "tasks": [
+    {
+      "id": "879bdea3-bce5-4c6c-a08c-5caf4c838182",
+      "title": "homework",
+      "description": "workout the pdf and submit to Ariamelsab@gmail.com",
+      "due": "2005-01-01",
+      "tag": "english",
+      "notify": false,
+      "createdAt": "2025-09-16T18:10:29.912Z",
+      "completed": false,
+      "document": {
+        "filename": "1758046229903-471880300-Personal Statement for Master.docx",
+        "originalname": "Personal Statement for Master.docx",
+        "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "path": "/uploads/1758046229903-471880300-Personal Statement for Master.docx"
+      },
+      "completedAt": null
+    },
+    {
+      "id": "a7865359-7e82-4342-b952-730aa6972f66",
+      "title": "try this",
+      "description": "",
+      "due": "2005-02-02",
+      "tag": "u try all questions",
+      "notify": false,
+      "createdAt": "2025-09-16T16:05:06.940Z",
+      "completed": true,
+      "completedAt": "2025-09-16T16:09:54.500Z"
+    }
+  ],
+  "lastUpdated": 1758047626491,
+  "students": [
+    {
+      "username": "ariamyohane@gmail.com",
+      "password": "yosaneysweety"
+    }
+  ]
+}

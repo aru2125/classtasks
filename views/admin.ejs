@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Dashboard</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/public/images/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/public/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body>
+<header class="topbar"><h1>Teacher Dashboard</h1><a class="btn" href="/admin/logout">Logout</a></header>
+<main class="container">
+  <section class="left">
+    <h2>Create new task / timetable entry</h2>
+  <form method="post" action="/admin/tasks" class="card" enctype="multipart/form-data">
+      <label>Title<input name="title" required></label>
+      <label>Description<textarea name="description"></textarea></label>
+      <label>Due Date<input type="date" name="due"></label>
+      <label>Tag<input name="tag" placeholder="e.g. Math, English"></label>
+      <label><input type="checkbox" name="notify"> Send browser notification to students</label>
+      <label>Upload Document (img, Word, PDF)
+        <input type="file" name="document" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+      </label>
+      <button>Create</button>
+    </form>
+
+    <h2>Existing tasks</h2>
+    <% tasks.forEach(function(t){ %>
+      <div class="task-card">
+        <h3><%= t.title %></h3>
+        <p><%= t.description %></p>
+        <p class="muted">Due: <%= t.due || '—' %> | Tag: <%= t.tag || '—' %></p>
+        <form method="post" action="/admin/tasks/<%= t.id %>/edit" class="inline-form">
+          <input name="title" value="<%= t.title %>">
+          <input name="due" type="date" value="<%= t.due %>">
+          <input name="tag" value="<%= t.tag %>">
+          <button>Edit</button>
+        </form>
+        <form method="post" action="/admin/tasks/<%= t.id %>/delete" onsubmit="return confirm('Delete this task?')">
+          <button class="danger">Delete</button>
+        </form>
+      </div>
+    <% }) %>
+  </section>
+
+  <aside class="right">
+    <h3>Live preview</h3>
+    <div id="previewArea"></div>
+    <p class="muted">Students will see updates automatically and receive browser notifications if allowed.</p>
+  </aside>
+</main>
+<script>
+// polling for preview
+async function loadPreview(){
+  const res = await fetch('/api/tasks');
+  const j = await res.json();
+  const el = document.getElementById('previewArea');
+  el.innerHTML = j.tasks.map(t=>`<div class="pv"><strong>${t.title}</strong><div class="muted">Due: ${t.due||'—'}</div></div>`).join('');
+}
+setInterval(loadPreview,3000); loadPreview();
+</script>
+</body></html>
